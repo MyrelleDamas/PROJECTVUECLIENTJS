@@ -1,11 +1,12 @@
 {
   "name": "teste",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint --no fix"
+    "lint": "vue-cli-service lint --no fix",
+    "server": "node server.js"
   },
   "dependencies": {
     "bootstrap": "^5.2.3",
