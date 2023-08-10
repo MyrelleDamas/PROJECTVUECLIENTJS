@@ -1,6 +1,6 @@
 # Clone the repository on the server
 ```
-git clone https://github.com/MyrelleDamas/NODEJSBACKEND
+git clone https://github.com/MyrelleDamas/PROJECTVUECLIENTJS
 ```
 
 ## Install dependencies
