@@ -1,13 +1,15 @@
-# teste
+# Clone the repository on the server
+```
+git clone https://github.com/MyrelleDamas/NODEJSBACKEND
+```
 
-## Project setup
+## Install dependencies
 ```
 npm install
 ```
-
-### Compiles and hot-reloads for development
+## Install skywalking agent
 ```
-npm run serve
+npm install --save skywalking-client-js
 ```
 
 ### Compiles and minifies for production
@@ -20,5 +22,8 @@ npm run build
 npm run lint
 ```
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+### Compiles for development
+```
+npm run server
+```
+
