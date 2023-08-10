@@ -1,6 +1,9 @@
 <template>
   <div id="slogan">
     <div class="text-center">
+        <customHeaders>
+                <add name="Access-Control-Allow-Origin" value="*" />
+        </customHeaders>
       <h1>TESTE DE INTEGRAÇÃO COM O AGENTE SW</h1>
       <br/>
       <h6 class="text-secondary">teste para comunicação com agente skywalking</h6>
@@ -19,8 +22,13 @@
                   </li>
                 </ul>
                 <br/>
-                <input class="form-control" type="text" placeholder="digita "/>
-              </div>
+        <div class="input-group">
+           <input class="form-control" type="text" v-model="prefix" placeholder="digite algo "/>
+        <div class="input-group-append">
+                <button class="btn btn-info" v-on:click="addPrefix(prefix)"><span class="fa fa-plus"></span></button>
+        </div>
+        </div>
+     </div>
             </div>
           </div>
 
@@ -34,7 +42,9 @@
                   </li>
                 </ul>
                 <br/>
+        <div class="input-group">
                 <input class="form-control" type="text" placeholder="digita "/>
+        </div>
               </div>
             </div>
           </div>
@@ -49,7 +59,6 @@
                       {{ domain }}
                   </li>
                 </ul>
-
           </div>
         </div>
       </div>
@@ -58,29 +67,31 @@
 
 <script>
 import ClientMonitor from "skywalking-client-js";
+ClientMonitor.register({
+        collector: 'http://10.0.28.209:12888',
+        service: 'GMMI::TESTE-FRONTEND-VUE-MANUAL',
+        pagePath: 'root/teste/dist',
+        serviceVersion: 'v1.0.0',
+});
 
 import "bootstrap/dist/css/bootstrap.css"
 import "font-awesome/css/font-awesome.css"
 export default {
   name: 'app',
-  mounted() {
-        ClientMonitor.register({
-                collector: "10.0.28.209:8081",
-                service: "sky-client-teste",
-                vue: true,
-                pagePath: "root/teste/dist/",
-                enableSPA: true,
-                serviceVersion: "v1.0.0",
-        });
-},
   data: function (){
     return {
+prefix: "",
       prefixes: ['aaa', 'bbb', 'ccc'],
       sufixes: ['ddd', 'eee', 'fff'],
       domains: ['aaa ddd', 'bbb eee', 'ccc fff']
     };
-  }
-}
+  },
+        methods: {
+                addPrefix(prefix) {
+                        this.prefixes.push(prefix);
+                }
+        }
+};
 </script>
 
 <style>
