@@ -7,9 +7,15 @@ git clone https://github.com/MyrelleDamas/PROJECTVUECLIENTJS
 ```
 npm install
 ```
-## Install skywalking agent
+## Install skywalking agents
 ```
+npm install --save skywalking-backend-js
 npm install --save skywalking-client-js
+```
+
+### Install CORS
+```
+npm install cors
 ```
 
 ### Compiles and minifies for production
