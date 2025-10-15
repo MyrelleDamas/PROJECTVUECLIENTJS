@@ -1,28 +1,31 @@
-import express from 'express';
-import cors from 'cors';
-import bodyParser from 'body-parser';
-/*import { default as agent } from 'skywalking-backend-js';*/
-import path from 'path';
-import { fileURLToPath } from 'url';
+// Configuracao SkyWalking AGENT
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const { default: agent } = require('skywalking-backend-js');
+agent.start({
+  serviceName: 'GMMI::TESTE-NODE-VUE-MANUAL', // nome do serviço no SkyWalking
+  collectorAddress: 'ipdoservidor:11800',     // substitua pelo IP real do SkyWalking
+});
 
-// Inicia o agente SkyWalking
-/*agent.start({
-  serviceName: 'PROJETOSHELLOWORLD::BACKEND-VUE',
-  collectorAddress: 'IPDOSERVER:11800',
-});*/
+// ==========================
+// Dependencias principais
+// ==========================
+const express = require('express');
+const cors = require('cors');
+const bodyParser = require('body-parser');
+const path = require('path');
 
+// ==========================
+// Configuracao do servidor
+// ==========================
 const app = express();
 const port = 8092;
 
 // Middlewares
+app.use(cors({ origin: true, credentials: true }));
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'dist')));
-app.use(cors({ origin: true, credentials: true }));
 
-// Headers CORS adicionais
+// Headers CORS extras (garante compatibilidade total)
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
   res.header(
@@ -33,12 +36,16 @@ app.use((req, res, next) => {
   next();
 });
 
-// Serve o index.html do Vue
+// ==========================
+// Rota padrao para o Vue
+// ==========================
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'dist/index.html'));
+  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
-// Inicia o servidor
+// ==========================
+// Inicializacao
+// ==========================
 app.listen(port, () => {
   console.log(`Server listening on port ${port}`);
   console.log('CORS-enabled web server running');
