@@ -58,33 +58,78 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+import axios from 'axios'
+
+// =======================================================
+// Integração com backend e banco de dados MySQL
+// =======================================================
+// Esta seção substitui a lógica anterior que armazenava os comentários apenas em memória local.
+// Agora, os comentários são persistidos em um banco de dados MySQL através de uma API REST.
+// Isso permite que os dados sejam mantidos entre sessões, acessíveis por múltiplos usuários,
+// e gerenciados de forma centralizada no servidor.
+//
+// A API está configurada para responder em /api/comments e deve oferecer suporte aos métodos:
+// - GET    → para listar todos os comentários
+// - POST   → para adicionar um novo comentário
+// - DELETE → para remover um comentário específico (usando o ID)
+//
+// Certifique-se de que o backend esteja rodando corretamente e que o banco esteja acessível.
+// O Axios é utilizado para fazer as requisições HTTP.
+// =======================================================
+
+// URL do backend (ajusta se estiver em outro servidor)
+const API_URL = '/api/comments'
 
 // estados reativos
 const name = ref('')
 const message = ref('')
 const comments = ref([])
 
-// funções
-function addComment() {
+// carrega os comentários do banco
+async function loadComments() {
+  try {
+    const res = await axios.get(API_URL)
+    comments.value = res.data
+  } catch (err) {
+    console.error('Erro ao carregar comentários:', err)
+  }
+}
+
+// adiciona novo comentário
+async function addComment() {
   if (message.value.trim() === '') {
     alert('Por favor, escreva uma mensagem antes de comentar.')
     return
   }
 
-  comments.value.push({
-    name: name.value.trim() || null,
-    message: message.value.trim(),
-  })
-
-  // limpa os campos
-  name.value = ''
-  message.value = ''
-}
-
-function removeComment(index) {
-  if (confirm('Tem certeza que deseja excluir este comentário?')) {
-    comments.value.splice(index, 1)
+  try {
+    await axios.post(API_URL, {
+      name: name.value.trim() || null,
+      message: message.value.trim()
+    })
+    message.value = ''
+    name.value = ''
+    loadComments() // atualiza lista
+  } catch (err) {
+    console.error('Erro ao adicionar comentário:', err)
   }
 }
+
+// exclui um comentário do banco
+async function removeComment(index) {
+  const comment = comments.value[index]
+  if (!comment) return
+  if (confirm('Tem certeza que deseja excluir este comentário?')) {
+    try {
+      await axios.delete(`${API_URL}/${comment.id}`)
+      comments.value.splice(index, 1)
+    } catch (err) {
+      console.error('Erro ao excluir comentário:', err)
+    }
+  }
+}
+
+// carrega os comentários ao montar o componente
+onMounted(loadComments)
 </script>
