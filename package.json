@@ -15,8 +15,6 @@
     "cors": "^2.8.5",
     "express": "^4.18.2",
     "font-awesome": "^4.7.0",
-    "skywalking-backend-js": "^0.6.0",
-    "skywalking-client-js": "^0.9.0",
     "vue": "^3.3.4",
     "vue-router": "^4.2.3"
   },
