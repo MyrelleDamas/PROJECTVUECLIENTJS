@@ -10,10 +10,10 @@ import CommentSection from './components/CommentSection.vue'
 import ClientMonitor from 'skywalking-client-js';
 
 ClientMonitor.register({
-    collector: 'http://IPDOSERVER:12800',
-    service: 'PROJETOSHELLOWORLD::FRONTEND-VUE',
-    pagePath: '/dist',
-    serviceVersion: 'v1.0.0',
+    collector: 'http://IPDOSERVER:12800', // IP do servidor do Skywalking com porta que aponta para o ClientJS
+    service: 'NOMEDOGRUPO::NOMEDOSERVICO', 
+    pagePath: '/dist', // referenciar a pasta dist
+    serviceVersion: 'v2.0.0',
 });
 </script>
 
