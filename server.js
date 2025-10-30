@@ -2,7 +2,7 @@
 
 const { default: agent } = require('skywalking-backend-js');
 agent.start({
-  serviceName: 'GMMI::TESTE-NODE-VUE-MANUAL', // nome do serviço no SkyWalking
+  serviceName: 'NOMEDOGRUPO::NOMEDOSERVICO', // nome do serviço no SkyWalking
   collectorAddress: 'ipdoservidor:11800',     // substitua pelo IP real do SkyWalking
 });
 
