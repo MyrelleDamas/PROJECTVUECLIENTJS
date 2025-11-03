@@ -23,11 +23,6 @@ npm install cors
 npm run build
 ```
 
-### Lints and fixes files
-```
-npm run lint
-```
-
 ### Compiles for development
 ```
 npm run server

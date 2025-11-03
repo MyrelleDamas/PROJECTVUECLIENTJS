@@ -1,6 +1,11 @@
 {
+<<<<<<< HEAD
    "name": "ProjetoVueVersao2025MesNOV",
   "version": "3.0.0",
+=======
+  "name": "ProjetoVueVersao2025MesOUT",
+  "version": "2.0.0",
+>>>>>>> 889776bb3a4c0b80b52ba923a5b76c0e0a437aad
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -15,8 +20,6 @@
     "cors": "^2.8.5",
     "express": "^4.18.2",
     "font-awesome": "^4.7.0",
-    "skywalking-backend-js": "^0.6.0",
-    "skywalking-client-js": "^0.9.0",
     "vue": "^3.3.4",
     "vue-router": "^4.2.3"
   },

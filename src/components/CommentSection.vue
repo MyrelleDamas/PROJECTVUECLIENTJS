@@ -69,6 +69,26 @@
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
 
+<<<<<<< HEAD
+=======
+// =======================================================
+// Integração com backend e banco de dados MySQL
+// =======================================================
+// Esta seção substitui a lógica anterior que armazenava os comentários apenas em memória local.
+// Agora, os comentários são persistidos em um banco de dados MySQL através de uma API REST.
+// Isso permite que os dados sejam mantidos entre sessões, acessíveis por múltiplos usuários,
+// e gerenciados de forma centralizada no servidor.
+//
+// A API está configurada para responder em /api/comments e deve oferecer suporte aos métodos:
+// - GET    → para listar todos os comentários
+// - POST   → para adicionar um novo comentário
+// - DELETE → para remover um comentário específico (usando o ID)
+//
+// Certifique-se de que o backend esteja rodando corretamente e que o banco esteja acessível.
+// O Axios é utilizado para fazer as requisições HTTP.
+// =======================================================
+
+>>>>>>> 889776bb3a4c0b80b52ba923a5b76c0e0a437aad
 // URL do backend (ajusta se estiver em outro servidor)
 const API_URL = '/api/comments'
 
@@ -121,6 +141,7 @@ async function removeComment(index) {
   }
 }
 
+<<<<<<< HEAD
 // Funções para simulações de erro da aplicação
 async function simulateLatency() {
   try {
@@ -141,6 +162,8 @@ async function simulateProcessingError() {
   }
 }
 
+=======
+>>>>>>> 889776bb3a4c0b80b52ba923a5b76c0e0a437aad
 // carrega os comentários ao montar o componente
 onMounted(loadComments)
 </script>
