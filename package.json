@@ -1,6 +1,6 @@
 {
-  "name": "ProjetoVueVersao2025MesOUT",
-  "version": "1.0.0",
+   "name": "ProjetoVueVersao2025MesNOV",
+  "version": "3.0.0",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",

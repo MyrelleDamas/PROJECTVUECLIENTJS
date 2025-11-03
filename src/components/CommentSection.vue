@@ -53,38 +53,94 @@
           </button>
         </li>
       </ul>
+    
+    <hr />
+    <div class="mt-4">
+    <h5>Testes de Erro (Skywalking)</h5>
+    <button class="btn btn-warning me-2" @click="simulateLatency">Simular Latência</button>
+    <button class="btn btn-danger" @click="simulateProcessingError">Simular Erro de Processamento</button>
+    </div>
+    
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+import axios from 'axios'
+
+// URL do backend (ajusta se estiver em outro servidor)
+const API_URL = '/api/comments'
 
 // estados reativos
 const name = ref('')
 const message = ref('')
 const comments = ref([])
 
-// funções
-function addComment() {
+// carrega os comentários do banco
+async function loadComments() {
+  try {
+    const res = await axios.get(API_URL)
+    comments.value = res.data
+  } catch (err) {
+    console.error('Erro ao carregar comentários:', err)
+  }
+}
+
+// adiciona novo comentário
+async function addComment() {
   if (message.value.trim() === '') {
     alert('Por favor, escreva uma mensagem antes de comentar.')
     return
   }
 
-  comments.value.push({
-    name: name.value.trim() || null,
-    message: message.value.trim(),
-  })
-
-  // limpa os campos
-  name.value = ''
-  message.value = ''
-}
-
-function removeComment(index) {
-  if (confirm('Tem certeza que deseja excluir este comentário?')) {
-    comments.value.splice(index, 1)
+  try {
+    await axios.post(API_URL, {
+      name: name.value.trim() || null,
+      message: message.value.trim()
+    })
+    message.value = ''
+    name.value = ''
+    loadComments() // atualiza lista
+  } catch (err) {
+    console.error('Erro ao adicionar comentário:', err)
   }
 }
+
+// exclui um comentário do banco
+async function removeComment(index) {
+  const comment = comments.value[index]
+  if (!comment) return
+  if (confirm('Tem certeza que deseja excluir este comentário?')) {
+    try {
+      await axios.delete(`${API_URL}/${comment.id}`)
+      comments.value.splice(index, 1)
+    } catch (err) {
+      console.error('Erro ao excluir comentário:', err)
+    }
+  }
+}
+
+// Funções para simulações de erro da aplicação
+async function simulateLatency() {
+  try {
+    const res = await axios.get('/api/simulate-latency');
+    alert('Latência simulada: ' + res.data.message);
+  } catch (err) {
+    console.error('Erro de latência:', err);
+    alert('Erro capturado na latência');
+  }
+}
+
+async function simulateProcessingError() {
+  try {
+    await axios.get('/api/simulate-processing-error');
+  } catch (err) {
+    console.error('Erro de processamento:', err);
+    alert('Erro capturado: ' + err.response?.data?.error || err.message);
+  }
+}
+
+// carrega os comentários ao montar o componente
+onMounted(loadComments)
 </script>
