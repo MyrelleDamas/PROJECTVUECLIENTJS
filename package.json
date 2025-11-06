@@ -1,11 +1,6 @@
 {
-<<<<<<< HEAD
    "name": "ProjetoVueVersao2025MesNOV",
   "version": "3.0.0",
-=======
-  "name": "ProjetoVueVersao2025MesOUT",
-  "version": "2.0.0",
->>>>>>> 889776bb3a4c0b80b52ba923a5b76c0e0a437aad
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
