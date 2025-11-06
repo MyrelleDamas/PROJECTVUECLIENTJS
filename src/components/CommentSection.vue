@@ -68,9 +68,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
-
-<<<<<<< HEAD
-=======
+  
 // =======================================================
 // Integração com backend e banco de dados MySQL
 // =======================================================
@@ -88,7 +86,6 @@ import axios from 'axios'
 // O Axios é utilizado para fazer as requisições HTTP.
 // =======================================================
 
->>>>>>> 889776bb3a4c0b80b52ba923a5b76c0e0a437aad
 // URL do backend (ajusta se estiver em outro servidor)
 const API_URL = '/api/comments'
 
@@ -141,7 +138,6 @@ async function removeComment(index) {
   }
 }
 
-<<<<<<< HEAD
 // Funções para simulações de erro da aplicação
 async function simulateLatency() {
   try {
@@ -162,8 +158,6 @@ async function simulateProcessingError() {
   }
 }
 
-=======
->>>>>>> 889776bb3a4c0b80b52ba923a5b76c0e0a437aad
 // carrega os comentários ao montar o componente
 onMounted(loadComments)
 </script>
