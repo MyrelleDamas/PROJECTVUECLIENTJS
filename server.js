@@ -3,13 +3,8 @@
 // ==========================
 const { default: agent } = require('skywalking-backend-js');
 agent.start({
-<<<<<<< HEAD
-  serviceName: 'PROJETOSHELLOWORLD::BACKEND-VUE', // nome do serviço no SkyWalking
-  collectorAddress: '10.0.28.209:11800',
-=======
-  serviceName: 'NOMEDOGRUPO::NOMEDOSERVICO', // nome do serviço no SkyWalking
-  collectorAddress: 'ipdoservidor:11800',     // substitua pelo IP real do SkyWalking
->>>>>>> 889776bb3a4c0b80b52ba923a5b76c0e0a437aad
+	serviceName: 'NOMEDOGRUPO::NOMEDOSERVICO', // nome do serviço no SkyWalking
+	collectorAddress: 'ipdoservidor:11800',     // substitua pelo IP real do SkyWalking
 });
 
 // ==========================
@@ -50,8 +45,8 @@ app.use((req, res, next) => {
 // ==========================
 const db = mysql.createConnection({
   host: 'localhost',
-  user: 'skywalking',
-  password: 'skywalking',
+  user: 'usuario do banco criado',
+  password: 'senha do banco',
   database: 'projetovue'
 });
 
