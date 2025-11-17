@@ -3,8 +3,8 @@
 // ==========================
 const { default: agent } = require('skywalking-backend-js');
 agent.start({
-	serviceName: 'NOMEDOGRUPO::NOMEDOSERVICO', // nome do serviço no SkyWalking
-	collectorAddress: 'ipdoservidor:11800',     // substitua pelo IP real do SkyWalking
+  serviceName: 'PROJETOSHELLOWORLD::BACKEND-VUE', // nome do serviço no SkyWalking
+  collectorAddress: 'IPDOSERVIDOR:11800', // substitua pelo IP do servidor aonde roda o Skywalking
 });
 
 // ==========================
@@ -45,8 +45,8 @@ app.use((req, res, next) => {
 // ==========================
 const db = mysql.createConnection({
   host: 'localhost',
-  user: 'usuario do banco criado',
-  password: 'senha do banco',
+  user: 'skywalking',
+  password: 'skywalking',
   database: 'projetovue'
 });
 
@@ -99,20 +99,38 @@ app.delete('/api/comments/:id', (req, res) => {
 
 // Simulação de Erro: Latência
 app.get('/api/simulate-latency', async (req, res) => {
-	setTimeout(() => {
-		res.json({ message: 'Resposta com atraso de 5 segundos.'});
-	}, 5000); // Setando valor desejado
+        setTimeout(() => {
+                res.json({ message: 'Resposta com atraso de 5 segundos.'});
+        }, 5000); // Setando valor desejado
 });
 
 // Simulação de Erro: Processamento de dados
 app.get('/api/simulate-processing-error', (req, res) => {
-	try{
-		//Simula erro de JSON malformado
-		JSON.parse('{"invalidJson": }');
-		res.json({ message: 'Isso não deveria parecer :(.'});
-	} catch (err) {
-		res.status(500).json({ error: 'Erro de processamento simulado.'});
-	}
+        try{
+                //Simula erro de JSON malformado
+                JSON.parse('{"invalidJson": }');
+                res.json({ message: 'Isso não deveria parecer :(.'});
+        } catch (err) {
+                res.status(500).json({ error: 'Erro de processamento simulado.'});
+        }
+});
+
+// Simulação de Erro: Adiciona novo comentário
+app.post('/api/comments/erro', (req, res) => {
+  const { name, message } = req.body;
+
+  if (!message || message.trim() === '') {
+    return res.status(400).json({ error: 'Mensagem é obrigatória.' });
+  }
+
+  db.query(
+    'INSERT INTO TESTE (name, message) VALUES (?, ?)',
+    [name || null, message],
+    (err, result) => {
+      if (err) return res.status(500).json(err);
+      res.json({ id: result.insertId, name, message });
+    }
+  );
 });
 
 // ==========================
@@ -129,4 +147,3 @@ app.listen(port, () => {
   console.log(`Server listening on port ${port}`);
   console.log('CORS-enabled web server running');
 });
-
