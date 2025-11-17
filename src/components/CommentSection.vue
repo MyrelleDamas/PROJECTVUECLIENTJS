@@ -27,7 +27,7 @@
         <button type="submit" class="btn btn-primary w-100">
           Comentar
         </button>
-      </form>
+        </form>
 
       <hr />
 
@@ -53,14 +53,13 @@
           </button>
         </li>
       </ul>
-    
-    <hr />
+<hr />
     <div class="mt-4">
     <h5>Testes de Erro (Skywalking)</h5>
     <button class="btn btn-warning me-2" @click="simulateLatency">Simular Latência</button>
     <button class="btn btn-danger" @click="simulateProcessingError">Simular Erro de Processamento</button>
+    <button class="btn btn-danger me-2" @click="simulateErroraddComment">Simular Erro de Adição no Comentário</button>
     </div>
-    
     </div>
   </div>
 </template>
@@ -68,23 +67,16 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
-  
+
 // =======================================================
 // Integração com backend e banco de dados MySQL
 // =======================================================
-// Esta seção substitui a lógica anterior que armazenava os comentários apenas em memória local.
-// Agora, os comentários são persistidos em um banco de dados MySQL através de uma API REST.
-// Isso permite que os dados sejam mantidos entre sessões, acessíveis por múltiplos usuários,
-// e gerenciados de forma centralizada no servidor.
-//
+// Os comentários são persistidos em um banco de dados MySQL através de uma API REST.
 // A API está configurada para responder em /api/comments e deve oferecer suporte aos métodos:
 // - GET    → para listar todos os comentários
 // - POST   → para adicionar um novo comentário
 // - DELETE → para remover um comentário específico (usando o ID)
-//
-// Certifique-se de que o backend esteja rodando corretamente e que o banco esteja acessível.
 // O Axios é utilizado para fazer as requisições HTTP.
-// =======================================================
 
 // URL do backend (ajusta se estiver em outro servidor)
 const API_URL = '/api/comments'
@@ -156,6 +148,22 @@ async function simulateProcessingError() {
     console.error('Erro de processamento:', err);
     alert('Erro capturado: ' + err.response?.data?.error || err.message);
   }
+}
+
+async function simulateErroraddComment() {
+  if (message.value.trim() === '') {
+    alert('Por favor, escreva uma mensagem antes de comentar.')
+    return
+  }
+
+    await axios.post('/api/comments/erro', {
+		name: name.value.trim() || null,
+		message: message.value.trim()
+    })
+    
+	message.value = ''
+    name.value = ''
+    loadComments() // atualiza lista
 }
 
 // carrega os comentários ao montar o componente
