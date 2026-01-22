@@ -1,0 +1,188 @@
+/**
+ * server.js — versão tolerante a falhas
+ *
+ * Diferenças em relação à versão base:
+ * - Inicialização segura do SkyWalking Agent
+ * - Evita impacto no event loop caso o collector esteja indisponível
+ * - Pensado para ambientes de teste rodando por longos períodos (PM2)
+ * - configurar no PM2 (isso não é no código, é para subir o projeto com pm2)
+ * - pm2 set SW_ENABLED true
+ * - pm2 set SW_COLLECTOR ipmascarado:11800
+ * - pm2 restart PROJECTVUECLIENTJS
+ *
+ * A versão base segue a configuração padrão recomendada pela documentação oficial do SkyWalking.
+ */
+
+
+// ==========================
+// Configuração SkyWalking AGENT
+// ==========================
+if (
+  process.env.SW_ENABLED === 'true' &&
+  process.env.SW_COLLECTOR
+) {
+  try {
+    const { default: agent } = require('skywalking-backend-js');
+
+    agent.start({
+      serviceName: 'PROJETOSHELLOWORLD::BACKEND-VUE',
+      collectorAddress: process.env.SW_COLLECTOR,
+    });
+
+    console.log('SkyWalking agent iniciado');
+  } catch (err) {
+    console.error('Falha ao iniciar SkyWalking:', err.message);
+  }
+} else {
+  console.log('SkyWalking desabilitado por configuração');
+}
+
+
+// ==========================
+// Dependências principais
+// ==========================
+const express = require('express');
+const cors = require('cors');
+const bodyParser = require('body-parser');
+const path = require('path');
+const mysql = require('mysql2');
+
+// ==========================
+// Inicialização do app
+// ==========================
+const app = express();
+const port = 8092;
+
+// ==========================
+// Middlewares
+// ==========================
+app.use(cors({ origin: true, credentials: true }));
+app.use(bodyParser.json());
+app.use(express.static(path.join(__dirname, 'dist')));
+
+// Headers CORS extras (compatibilidade total)
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header(
+    'Access-Control-Allow-Headers',
+    'Origin, X-Requested-With, Content-Type, Accept'
+  );
+  res.header('Access-Control-Allow-Methods', 'POST, GET, PUT, DELETE, OPTIONS');
+  next();
+});
+
+// ==========================
+// Conexão com o MySQL (POOL - mais estável para long-running)
+// ==========================
+const mysql = require('mysql2/promise');
+
+const db = mysql.createPool({
+  host: 'localhost',
+  user: 'skywalking',
+  password: 'skywalking',
+  database: 'projetovue',
+  waitForConnections: true,
+  connectionLimit: 5,
+  queueLimit: 0
+});
+
+// Teste inicial de conexão (não trava o app)
+(async () => {
+  try {
+    const connection = await db.getConnection();
+    console.log('Conectado ao MySQL com sucesso (pool)!');
+    connection.release();
+  } catch (err) {
+    console.error('Erro ao conectar no MySQL (pool):', err.message);
+  }
+})();
+
+// ==========================
+// Rotas da API para o Vue
+// ==========================
+
+// Pega todos os comentários
+app.get('/api/comments', (req, res) => {
+  db.query('SELECT * FROM comentarios ORDER BY id DESC', (err, result) => {
+    if (err) return res.status(500).json(err);
+    res.json(result);
+  });
+});
+
+// Adiciona novo comentário
+app.post('/api/comments', (req, res) => {
+  const { name, message } = req.body;
+
+  if (!message || message.trim() === '') {
+    return res.status(400).json({ error: 'Mensagem é obrigatória.' });
+  }
+
+  db.query(
+    'INSERT INTO comentarios (name, message) VALUES (?, ?)',
+    [name || null, message],
+    (err, result) => {
+      if (err) return res.status(500).json(err);
+      res.json({ id: result.insertId, name, message });
+    }
+  );
+});
+
+// Exclui comentário
+app.delete('/api/comments/:id', (req, res) => {
+  const { id } = req.params;
+  db.query('DELETE FROM comentarios WHERE id = ?', [id], err => {
+    if (err) return res.status(500).json(err);
+    res.sendStatus(204);
+  });
+});
+
+// Simulação de Erro: Latência
+app.get('/api/simulate-latency', async (req, res) => {
+        setTimeout(() => {
+                res.json({ message: 'Resposta com atraso de 5 segundos.'});
+        }, 5000); // Setando valor desejado
+});
+
+// Simulação de Erro: Processamento de dados
+app.get('/api/simulate-processing-error', (req, res) => {
+        try{
+                //Simula erro de JSON malformado
+                JSON.parse('{"invalidJson": }');
+                res.json({ message: 'Isso não deveria parecer :(.'});
+        } catch (err) {
+                res.status(500).json({ error: 'Erro de processamento simulado.'});
+        }
+});
+
+// Adiciona novo comentário - Retorno Erro
+app.post('/api/comments/erro', (req, res) => {
+  const { name, message } = req.body;
+
+  if (!message || message.trim() === '') {
+    return res.status(400).json({ error: 'Mensagem é obrigatória.' });
+  }
+
+  db.query(
+    'INSERT INTO TESTE (name, message) VALUES (?, ?)',
+    [name || null, message],
+    (err, result) => {
+      if (err) return res.status(500).json(err);
+      res.json({ id: result.insertId, name, message });
+    }
+  );
+});
+
+// ==========================
+// Rota padrão para o Vue (SPA)
+// ==========================
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+});
+
+// ==========================
+// Inicialização do servidor
+// ==========================
+app.listen(port, () => {
+  console.log(`Server listening on port ${port}`);
+  console.log('CORS-enabled web server running');
+});
