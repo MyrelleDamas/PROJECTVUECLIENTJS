@@ -1,6 +1,6 @@
 {
-   "name": "ProjetoVueVersao2025MesNOV",
-  "version": "3.0.0",
+  "name": "ProjetoVueVersao2026MesJAN",
+  "version": "4.0.0",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -9,12 +9,16 @@
     "lint": "vue-cli-service lint --no-fix"
   },
   "dependencies": {
+    "axios": "^1.13.0",
     "body-parser": "^1.20.2",
     "bootstrap": "^5.2.3",
     "core-js": "^3.32.1",
     "cors": "^2.8.5",
     "express": "^4.18.2",
     "font-awesome": "^4.7.0",
+    "mysql2": "^3.15.3",
+    "skywalking-backend-js": "^0.6.0",
+    "skywalking-client-js": "^0.9.0",
     "vue": "^3.3.4",
     "vue-router": "^4.2.3"
   },
@@ -24,6 +28,7 @@
     "@vue/cli-plugin-babel": "^5.0.9",
     "@vue/cli-plugin-eslint": "^5.0.9",
     "@vue/cli-service": "^5.0.9",
+    "baseline-browser-mapping": "^2.9.17",
     "eslint": "^8.50.0",
     "eslint-plugin-vue": "^9.19.0"
   },
