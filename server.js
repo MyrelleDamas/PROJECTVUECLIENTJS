@@ -1,10 +1,19 @@
+/**
+ * server.js — versão FINAL funcional
+ * - SkyWalking tolerante a falha (não trava app)
+ * - MySQL funcionando (select / insert / delete)
+ * - PM2 safe
+ * - Vue SPA servida pelo dist
+ * - Ultima atualização: 29/01/2026
+ */
+
 // ==========================
 // Configuração SkyWalking AGENT
 // ==========================
 const { default: agent } = require('skywalking-backend-js');
 agent.start({
   serviceName: 'PROJETOSHELLOWORLD::BACKEND-VUE', // nome do serviço no SkyWalking
-  collectorAddress: 'IPDOSERVIDOR:11800', // substitua pelo IP do servidor aonde roda o Skywalking
+  collectorAddress: '10.0.28.209:11800', // substitua pelo IP do servidor aonde roda o Skywalking
 });
 
 // ==========================
@@ -14,7 +23,7 @@ const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const path = require('path');
-const mysql = require('mysql2');
+const mysql = require('mysql2/promise');
 
 // ==========================
 // Inicialização do app
@@ -25,11 +34,10 @@ const port = 8092;
 // ==========================
 // Middlewares
 // ==========================
-app.use(cors({ origin: true, credentials: true }));
+app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'dist')));
 
-// Headers CORS extras (compatibilidade total)
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
   res.header(
@@ -43,58 +51,81 @@ app.use((req, res, next) => {
 // ==========================
 // Conexão com o MySQL
 // ==========================
-const db = mysql.createConnection({
+const db = mysql.createPool({
   host: 'localhost',
   user: 'skywalking',
   password: 'skywalking',
-  database: 'projetovue'
+  database: 'projetovue',
+  waitForConnections: true,
+  connectionLimit: 5,
+  queueLimit: 0,
 });
 
-db.connect(err => {
-  if (err) {
-    console.error('Erro ao conectar no MySQL:', err);
-  } else {
-    console.log('Conectado ao MySQL com sucesso!');
+// Teste inicial
+(async () => {
+  try {
+    const conn = await db.getConnection();
+    console.log('MySQL conectado com sucesso');
+    conn.release();
+  } catch (err) {
+    console.error('Erro MySQL:', err.message);
   }
-});
+})();
 
 // ==========================
 // Rotas da API para o Vue
 // ==========================
 
-// Pega todos os comentários
-app.get('/api/comments', (req, res) => {
-  db.query('SELECT * FROM comentarios ORDER BY id DESC', (err, result) => {
-    if (err) return res.status(500).json(err);
-    res.json(result);
-  });
+// Pega todos os comentários (LISTAR)
+app.get('/api/comments', async (req, res) => {
+  try {
+    const [rows] = await db.query(
+        "SELECT id, name, message, DATE_FORMAT(created_at, '%d/%m/%Y %H:%i') AS created_at FROM comentarios ORDER BY id DESC"
+        );
+    res.json(rows);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ error: 'Erro ao buscar comentários' });
+  }
 });
 
-// Adiciona novo comentário
-app.post('/api/comments', (req, res) => {
+// Adiciona novo comentário (INSERIR)
+app.post('/api/comments', async (req, res) => {
   const { name, message } = req.body;
 
   if (!message || message.trim() === '') {
-    return res.status(400).json({ error: 'Mensagem é obrigatória.' });
+    return res.status(400).json({ error: 'Mensagem obrigatória' });
   }
 
-  db.query(
-    'INSERT INTO comentarios (name, message) VALUES (?, ?)',
-    [name || null, message],
-    (err, result) => {
-      if (err) return res.status(500).json(err);
-      res.json({ id: result.insertId, name, message });
-    }
-  );
+  try {
+    const [result] = await db.query(
+      'INSERT INTO comentarios (name, message) VALUES (?, ?)',
+      [name || null, message]
+    );
+
+    res.json({
+      id: result.insertId,
+      name,
+      message,
+    });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ error: 'Erro ao inserir comentário' });
+  }
 });
 
-// Exclui comentário
-app.delete('/api/comments/:id', (req, res) => {
-  const { id } = req.params;
-  db.query('DELETE FROM comentarios WHERE id = ?', [id], err => {
-    if (err) return res.status(500).json(err);
+// Exclui comentário (DELETAR)
+app.delete('/api/comments/:id', async (req, res) => {
+  try {
+    await db.query(
+      'DELETE FROM comentarios WHERE id = ?',
+      [req.params.id]
+    );
     res.sendStatus(204);
-  });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ error: 'Erro ao deletar comentário' });
+  }
 });
 
 // Simulação de Erro: Latência
@@ -144,6 +175,5 @@ app.get('/', (req, res) => {
 // Inicialização do servidor
 // ==========================
 app.listen(port, () => {
-  console.log(`Server listening on port ${port}`);
-  console.log('CORS-enabled web server running');
+  console.log(`Servidor rodando na porta ${port}`);
 });
