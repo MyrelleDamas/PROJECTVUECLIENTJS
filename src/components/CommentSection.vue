@@ -120,14 +120,12 @@ async function addComment() {
 async function removeComment(index) {
   const comment = comments.value[index]
   if (!comment) return
-  if (confirm('Tem certeza que deseja excluir este comentário?')) {
     try {
       await axios.delete(`${API_URL}/${comment.id}`)
       comments.value.splice(index, 1)
     } catch (err) {
       console.error('Erro ao excluir comentário:', err)
     }
-  }
 }
 
 // Funções para simulações de erro da aplicação
