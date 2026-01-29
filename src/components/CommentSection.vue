@@ -43,7 +43,7 @@
         >
           <p class="mb-1">{{ comment.message }}</p>
           <small class="text-secondary">
-            — {{ comment.name || 'Anônimo' }}
+            — {{ comment.name || 'Anônimo' }} · Data/Hora: {{ comment.created_at }}
           </small>
           <button
             class="btn btn-sm btn-outline-danger float-end"
@@ -58,7 +58,7 @@
     <h5>Testes de Erro (Skywalking)</h5>
     <button class="btn btn-warning me-2" @click="simulateLatency">Simular Latência</button>
     <button class="btn btn-danger" @click="simulateProcessingError">Simular Erro de Processamento</button>
-    <button class="btn btn-danger me-2" @click="simulateErroraddComment">Simular Erro de Adição no Comentário</button>
+        <button class="btn btn-danger me-2" @click="simulateErroraddComment">Simular Erro de Adição no Comentário</button>
     </div>
     </div>
   </div>
@@ -155,11 +155,11 @@ async function simulateErroraddComment() {
   }
 
     await axios.post('/api/comments/erro', {
-		name: name.value.trim() || null,
-		message: message.value.trim()
+                name: name.value.trim() || null,
+                message: message.value.trim()
     })
-    
-	message.value = ''
+
+        message.value = ''
     name.value = ''
     loadComments() // atualiza lista
 }
