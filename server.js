@@ -13,7 +13,7 @@
 const { default: agent } = require('skywalking-backend-js');
 agent.start({
   serviceName: 'PROJETOSHELLOWORLD::BACKEND-VUE', // nome do serviço no SkyWalking
-  collectorAddress: '10.0.28.209:11800', // substitua pelo IP do servidor aonde roda o Skywalking
+  collectorAddress: 'IPDOSERVER:11800', // substitua pelo IP do servidor aonde roda o Skywalking
 });
 
 // ==========================
