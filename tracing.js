@@ -4,7 +4,7 @@ const { OTLPTraceExporter } = require('@opentelemetry/exporter-trace-otlp-grpc')
 
 // Configura o exportador para a porta 4317 (gRPC) do Zabbix
 const traceExporter = new OTLPTraceExporter({
-  url: 'http://10.0.27.243:4317', // Substitua pelo IP real do Zabbix
+  url: 'http://IPDOSERVER:4317', // Substitua pelo IP real do Zabbix
 });
 
 const sdk = new NodeSDK({
